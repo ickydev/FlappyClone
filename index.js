@@ -8,7 +8,8 @@ let passaroLargura = 34;
 let passaroAltura = 24;
 let passaroX = bordaLargura / 8;
 let passaroY = bordaAltura / 2;
-let birding;
+let birdImgs = [];
+let birdImgsIndex = 0;
 
 // Flappy
 let passaro ={
@@ -39,6 +40,12 @@ let gravidade = 0.4;
 let gameOver = false;
 let pontos = 0;
 
+let asaSom = new Audio("./src/sounds/sfx_wing.wav");
+let hitSom = new Audio("./src/sounds/sfx_hit.wav");
+let pontoSom = new Audio("./src/sounds/sfx_point.wav");
+let bgm = new Audio("./src/sounds/bgm_mario.mp3");
+bgm.loop = true;
+
 window.onload = () => {
     borda = document.getElementById("borda");
     borda.width = bordaLargura;
@@ -46,10 +53,16 @@ window.onload = () => {
     context = borda.getContext("2d");
 
     //
-    birding = new Image();
-    birding.src = "/src/images/flappybird.png";
-    birding.onload = () => {
-        context.drawImage(birding, passaro.x, passaro.y, passaro.largura, passaro.altura);
+    //birdImgs = new Image();
+    //birdImgs.src = "/src/images/flappybird0.png";
+    //birdImgs.onload = () => {
+        //context.drawImage(birdImgs[birdImgsIndex], passaro.x, passaro.y, passaro.largura, passaro.altura);
+    //}
+
+    for(let i = 0; i < 4; i++){
+        let birdImg = new Image();
+        birdImg.src = "/src/images/flappybird" + i + ".png";
+        birdImgs.push(birdImg);
     }
 
     canoCimaImg = new Image();
@@ -60,6 +73,7 @@ window.onload = () => {
 
     requestAnimationFrame(Update)
     setInterval(AdicionarCanos , 1500 / dificuldade);
+    setInterval(AnimarPassaro , 100);
     document.addEventListener("keydown", MoverPassaro);
 }
 
@@ -77,7 +91,7 @@ function Update(){
     passaro.y += velocidadeY;
     passaro.y = Math.min(passaro.y, borda.height - passaro.altura);
     passaro.y = Math.max(passaro.y, 0);
-    context.drawImage(birding, passaro.x, passaro.y, passaro.largura, passaro.altura);
+    context.drawImage(birdImgs[birdImgsIndex], passaro.x, passaro.y, passaro.largura, passaro.altura);
 
     if(passaro.y == 0 || passaro.y == borda.height - passaro.altura){
         gameOver = true;
@@ -92,8 +106,10 @@ function Update(){
         if(!cano.passou && passaro.x > cano.x + cano.largura){
             cano.passou = true;
             pontos += 0.5;
+            pontoSom.play();
         }
         if(DetectarColisao(passaro, cano)){
+            hitSom.play();
             gameOver = true;
         }
     }
@@ -113,6 +129,8 @@ function Update(){
         context.fillText("Fim de Jogo", bordaLargura/5, bordaAltura/2);
         context.font = "1.2rem pixelify sans";
         context.fillText("Aperte espaço para recomeçar", bordaLargura/10, bordaAltura/2 + 30);
+        bgm.pause();
+        bgm.currentTime = 0;
     }
 
     switch(pontos){
@@ -169,6 +187,10 @@ function AdicionarCanos(){
 
 function MoverPassaro(e){
     if(e.code == "ArrowUp" || e.code == "Space" || e.code == "KeyX"){
+        if(bgm.paused){
+            bgm.play();
+        }
+        asaSom.play();
         velocidadeY = -6;
     }
 
@@ -185,4 +207,9 @@ function DetectarColisao(a,b){
     a.x + a.largura > b.x &&
     a.y < b.y + b.altura &&
     a.y + a.altura > b.y
+}
+
+function AnimarPassaro(){
+    birdImgsIndex++;
+    birdImgsIndex %= birdImgs.length;
 }
