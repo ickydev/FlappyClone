@@ -126,9 +126,9 @@ function Update(){
         context.fillStyle = "white";
         context.fillStyle = "text-type: bold";
         context.font = "2.6rem pixelify sans";
-        context.fillText("Fim de Jogo", bordaLargura/5, bordaAltura/2);
+        context.fillText("Game Over", bordaLargura/4.5, bordaAltura/2);
         context.font = "1.2rem pixelify sans";
-        context.fillText("Aperte espaço para recomeçar", bordaLargura/10, bordaAltura/2 + 30);
+        context.fillText("Press Space to Restart", bordaLargura/5, bordaAltura/2 + 30);
         bgm.pause();
         bgm.currentTime = 0;
     }
@@ -148,9 +148,6 @@ function Update(){
             break;
         case 15:
             dificuldade = 2;
-            break;
-        case 20:
-            dificuldade = 2.5;
             break;
     }
 }
